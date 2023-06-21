@@ -15,7 +15,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenHelper {
 
-    public static final Long JWT_TOKEN_EXPIRATION = 5*60*60L;
+    public static final Long JWT_TOKEN_EXPIRATION = 1000 * 60 * 60 * 10L;
 
     private String secret = "jwtTokenKey";
 
@@ -36,7 +36,7 @@ public class JwtTokenHelper {
 
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJwt(token).getBody();
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {

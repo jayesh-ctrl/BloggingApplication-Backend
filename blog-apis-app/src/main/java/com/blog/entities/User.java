@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +28,7 @@ public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private int userId;
 
 	@Column(name = "user_name", nullable = false, length = 100)
 	private String name;
@@ -40,8 +42,8 @@ public class User implements UserDetails {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role",
-	joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"),
-		inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "id")
+	joinColumns = @JoinColumn(name = "user", referencedColumnName = "userId"),
+		inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "roleId")
 	)
 	private Set<Role> roles = new HashSet<>();
 

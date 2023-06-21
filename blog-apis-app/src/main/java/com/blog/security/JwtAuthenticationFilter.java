@@ -2,6 +2,8 @@ package com.blog.security;
 
 import java.io.IOException;
 
+import com.blog.exceptions.APIException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,14 +44,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              try {
                  username = this.jwtTokenHelper.getUsernameFromToken(token);
              } catch (IllegalArgumentException ex) {
-                 System.out.println("unable to get username");
+                 throw new APIException("unable to get username");
              } catch (ExpiredJwtException ex) {
-                 System.out.println("JWT Token has expired !!!");
+                 throw new APIException("JWT Token has expired !!!");
              } catch (MalformedJwtException ex) {
-                 System.out.println("Invalid JWT Exception ");
+                 throw new APIException("Invalid JWT Exception ");
              }
         } else {
-            System.out.println("JWT does not start with Bearer");
+            System.out.println("JWT Does not start with Bearer");
+//            throw new APIException("JWT does not start with Bearer");
         }
         // once we get the token, now validation of token.
         if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null) {
@@ -60,11 +63,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } else {
-                System.out.println("Invalid JWT Token !!!");
+                throw new APIException("Invalid JWT Token !!!");
             }
 
         } else {
             System.out.println("username is null or context is not null");
+//            throw new APIException("username is null or context is not null");
         }
         filterChain.doFilter(request,response);
     }
