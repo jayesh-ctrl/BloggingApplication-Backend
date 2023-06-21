@@ -1,5 +1,6 @@
 package com.blog.security;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,8 @@ public class JwtTokenHelper {
     public static final Long JWT_TOKEN_EXPIRATION = 5*60*60L;
 
     private String secret = "jwtTokenKey";
+
+    byte[] decodedSecret = Base64.getDecoder().decode(secret);
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -41,20 +44,19 @@ public class JwtTokenHelper {
         return expiration.before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) throws Exception {
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims,userDetails.getUsername());
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject)
+    private String doGenerateToken(Map<String, Object> claims, String subject) throws Exception
     {
         return Jwts.builder()
             .setClaims(claims)
             .setSubject(subject)
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_EXPIRATION))
-            .signWith(SignatureAlgorithm.HS512,secret)
-            .compact();
+            .signWith(SignatureAlgorithm.HS256,secret).compact();
     }
 
     // validate token
